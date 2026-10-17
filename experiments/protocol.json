@@ -1,0 +1,1 @@
+{"a":"2","tau":["0.125","0.25","0.5","1"],"Y":["0.25","0.5","1","2"],"N":40,"rtol":0.02,"max_boxes":12000,"precision_bits":160,"rectangle":"[0,2*pi] x [-Y,Y]","uncertainty":"initial heat-potential coefficient l1; real case conjugate symmetry","notes":"Deterministic designed grid; numerical study protocol, not preregistration."}
