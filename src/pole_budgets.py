@@ -34,13 +34,14 @@ def amplification(y,tau):
 def support(theta,y,tau):
     """Support of the real-symmetric coefficient l1 unit ball after heat flow."""
     y=A(y); tau=A(tau); theta=A(theta)
+    if not tau>0: raise ValueError('tau must be positive')
     if y==0: return abs(theta.cos())
     if not y>0: raise ValueError('strict positive y needed')
     c,s=theta.cos(),theta.sin()
     # h_1(theta) >= exp(-tau)*sinh(y); k beyond K decreases geometrically.
     floor=(-tau).exp()*y.sinh()
     K=max(2,int(float((y/tau).upper()))+2)
-    while not (-tau*(K+1)**2+(K+1)*y).exp()<floor: K+=1
+    while not (tau*K>y and (-tau*(K+1)**2+(K+1)*y).exp()<floor): K+=1
     vals=[abs(c)]
     vals += [(-tau*k*k).exp()*((k*y).cosh()**2*c*c+(k*y).sinh()**2*s*s).sqrt() for k in range(1,K+1)]
     return maxball(vals)
@@ -64,6 +65,7 @@ def choose_theta(w,y,tau):
 def real_point_upper(w,y,tau):
     """Constructive bound using one conjugate Fourier pair (or constant)."""
     y=A(y); tau=A(tau)
+    if not tau>0 or not y>=0: raise ValueError('tau positive and y nonnegative required')
     if y==0:
         if w.imag==0: return abs(w.real)
         return arb.pos_inf()
@@ -97,16 +99,19 @@ class Potential:
     N: int=40
     def __post_init__(self):
         self.T=A(self.tau); self.alpha=A(self.a)
-        if not self.T>0 or not self.alpha>0 or self.N<0: raise ValueError('invalid potential')
+        if not self.T>0 or not self.alpha>0 or type(self.N) is not int or self.N<0: raise ValueError('invalid potential')
         self.c=[self.alpha.bessel_i(k)*(-self.T*k*k).exp() for k in range(self.N+1)]
     def tail(self,Y):
         Y=A(Y); n=self.N+1; a=self.alpha; T=self.T
+        if not Y>=0: raise ValueError('strip height must be nonnegative')
         q=a/(2*(n+1))*(Y-T*(2*n+1)).exp()
         if not q<1: raise ValueError('increase N for tail bound')
         term=2*(a*a/(4*(n+1))).exp()*(a/2)**n/arb.fac_ui(n)*(-T*n*n+n*Y).exp()
         return term/(1-q)
     def value(self,z,Y=None):
-        Y=abs(z.imag).upper() if Y is None else A(Y)
+        bound=abs(z.imag).upper()
+        Y=bound if Y is None else A(Y).upper()
+        if not Y>=bound: raise ValueError('strip height must cover the evaluation box')
         m=acb(z.real.mid(),z.imag.mid())
         r2=z.real.rad()**2+z.imag.rad()**2
         v=acb(self.c[0]); d=acb(0); second=arb(0)
@@ -133,6 +138,7 @@ def certified_count(pot,rect,depth=24):
     """CCW rectangle (horizontal coordinates in multiples of pi); image boxes certify phase increments."""
     x0,x1,y0,y1=map(Fraction,rect)
     if not x0<x1 or not y0<y1: raise ValueError('bad rectangle')
+    if type(depth) is not int or depth<0: raise ValueError('depth must be a nonnegative integer')
     pts=[(x0,y0),(x1,y0),(x1,y1),(x0,y1)]
     todo=[(pts[j],pts[(j+1)%4],0) for j in reversed(range(4))]
     accepted=[]; calls=0
@@ -158,6 +164,10 @@ def radius_bounds(pot,rect,real=False,rtol=.02,max_boxes=20000):
     Real lower bounds are dual support bounds; upper bounds use feasible pairs.
     """
     x0,x1,y0,y1=map(Fraction,rect)
+    if not x0<x1 or not y0<y1: raise ValueError('bad rectangle')
+    if type(real) is not bool: raise ValueError('real must be a boolean')
+    if not math.isfinite(rtol) or not 0<rtol<1: raise ValueError('relative tolerance must be between zero and one')
+    if type(max_boxes) is not int or max_boxes<4: raise ValueError('at least four boxes are required')
     pts=[(x0,y0),(x1,y0),(x1,y1),(x0,y1)]
     upper=arb.pos_inf(); records=[]; evaluations=0
     def evaluate(p,q):
@@ -195,6 +205,7 @@ class FinitePotential:
     def __init__(self,coeff,tau):
         self.T=A(tau)
         if not self.T>0: raise ValueError('tau must be positive')
+        if any(type(k) is not int for k in coeff): raise ValueError('Fourier modes must be integers')
         self.c={k:acb(v)*(-self.T*k*k).exp() for k,v in coeff.items()}
     def value(self,z,Y=None):
         return sum((v*(acb(0,k)*z).exp() for k,v in self.c.items()),acb(0))

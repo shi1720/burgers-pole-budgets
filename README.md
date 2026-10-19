@@ -2,7 +2,9 @@
 
 Companion artifact for **Sharp Coefficient Budgets for Certified Singularity Counts in Periodic Burgers Flow**, Shivam Gupta, 17 October 2026. This is a research manuscript, not a claim of acceptance or peer review.
 
-[Read the paper](paper/main.pdf).
+[Read the original public paper](paper/main.pdf).
+
+**Revision clarification (19 October 2026):** initial positivity and initial regularity are separate. An l1 perturbation can define only a continuous initial potential. Positive-time heat smoothing remains valid; smooth initial velocity additionally requires a smooth perturbation. Finite Fourier perturbations attain the boundary-zero distances, so the distances remain sharp within the smooth class for a smooth nominal potential. The original PDF predates this clarification; see REVISION_NOTES_2026-10-19.txt for the journal revision and related-work disclosure.
 
 The implementation counts zeros of periodic heat potentials using ball arithmetic, includes the infinite Bessel-series remainder, and encloses the distance to a boundary zero under initial Fourier coefficient l1 uncertainty. Conjugate-symmetric errors preserve real initial potentials and yield a different value set from arbitrary complex errors.
 
@@ -49,7 +51,7 @@ A budget enclosure has `lower`, `upper` (Arb bounds), approximate float summarie
 ## Recorded evidence
 
 - 16 primary contour counts and 32 global two-sided uncertainty-distance enclosures, all certified/converged.
-- Eight unit-test methods, including twelve analytic inner/outer zero-count fixtures and a boundary-zero refusal.
+- Twelve unit-test methods, including twelve analytic inner/outer zero-count fixtures and a boundary-zero refusal.
 - 48 seeded perturbed-contour checks across both perturbation classes.
 - Nine precision/truncation sensitivity runs.
 - An exact two-block geometric construction with single-pair cost 1.2352341853... and two-block cost one.

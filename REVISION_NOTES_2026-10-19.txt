@@ -1,0 +1,8 @@
+Burgers coefficient-budget journal revision, 19 October 2026
+
+1. Corrected the interpretation of initial regularity: positivity plus an l1 coefficient bound need not give smooth velocity at time zero. Positive-time smoothing remains valid. Added a finite-support sharpness corollary, directly following the existing attaining perturbations.
+2. Explicitly cites and distinguishes the related Sobolev-tail manuscript; its IMA Journal of Applied Mathematics submission is disclosed for editorial comparison.
+3. Certificate-domain checks validate positive time, strip coverage, mode/truncation integer indices, contour ordering and resource parameters. The real-support cutoff explicitly verifies its monotonicity condition.
+4. Twelve test methods cover the original eight and four input-contract regressions; full primary and validation scripts are reproduced. Scientific result comparison is saved separately.
+5. Elsevier layout, ORCID, complete declarations, four vector figures and two numbered tables.
+Original public commit: bb83a27dcefb97fc099cb8ebaeadbd73b2cf009c
